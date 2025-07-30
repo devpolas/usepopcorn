@@ -31,12 +31,14 @@ export default function App() {
   }
 
   useEffect(() => {
+    const controller = new AbortController();
     async function fetchData() {
       setErr("");
       setIsLoading((pre) => !pre);
       try {
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`
+          `http://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`,
+          { signal: controller.signal }
         );
         if (!res.ok) {
           throw new Error("Fail to fetch movies!");
@@ -49,7 +51,9 @@ export default function App() {
         setMovies(data.Search);
         console.log(data.Search);
       } catch (error) {
-        setErr(error.message);
+        if (error.name === "AbortError") {
+          setErr(error.message);
+        }
       } finally {
         setIsLoading((pre) => !pre);
       }
@@ -60,6 +64,10 @@ export default function App() {
       return;
     }
     fetchData();
+
+    return () => {
+      controller.abort();
+    };
   }, [query]);
 
   return (
@@ -232,6 +240,15 @@ function MovieDetails({ selectedId, onCloseMovie, handelWatched, watched }) {
     }
     getMovieDetails();
   }, [selectedId]);
+
+  useEffect(() => {
+    if (!title) return;
+    document.title = `Movie | ${title}`;
+
+    return () => {
+      document.title = "usePopcorn";
+    };
+  }, [title]);
 
   return (
     <div className='details'>
