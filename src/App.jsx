@@ -49,9 +49,8 @@ export default function App() {
           throw new Error("Movie Not Found!");
         }
         setMovies(data.Search);
-        console.log(data.Search);
       } catch (error) {
-        if (error.name === "AbortError") {
+        if (error === "AbortError") {
           setErr(error.message);
         }
       } finally {
@@ -63,6 +62,8 @@ export default function App() {
       setErr("");
       return;
     }
+
+    onCloseMovie();
     fetchData();
 
     return () => {
@@ -249,6 +250,20 @@ function MovieDetails({ selectedId, onCloseMovie, handelWatched, watched }) {
       document.title = "usePopcorn";
     };
   }, [title]);
+
+  useEffect(() => {
+    function callback(e) {
+      if (e.code === "Escape") {
+        onCloseMovie();
+        console.log("Closed");
+      }
+    }
+    document.addEventListener("keydown", callback);
+
+    return () => {
+      document.removeEventListener("keydown", callback);
+    };
+  }, [onCloseMovie]);
 
   return (
     <div className='details'>
