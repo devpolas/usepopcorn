@@ -139,6 +139,7 @@ body {
   list-style: none;
   padding: 0.8rem 0;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .list-watched {
