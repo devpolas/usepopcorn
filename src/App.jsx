@@ -54,9 +54,9 @@ export default function App() {
           throw new Error("Movie Not Found!");
         }
         setMovies(data.Search);
-      } catch (error) {
-        if (error === "AbortError" || error.name === "AbortError") {
-          setErr(error.message);
+      } catch (err) {
+        if (!err === "AbortError" || !err.name === "AbortError") {
+          setErr(err.message);
         }
       } finally {
         setIsLoading((pre) => !pre);
