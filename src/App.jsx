@@ -11,9 +11,14 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [err, setErr] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  // const [watched, setWatched] = useState([]);
+
+  //useState Hook only receive a callback function don't receive any arguments
+  const [watched, setWatched] = useState(() => {
+    return JSON.parse(localStorage.getItem("watched"));
+  });
 
   function handelSelectedId(id) {
     setSelectedId((pre) => (id === pre ? null : id));
@@ -50,7 +55,7 @@ export default function App() {
         }
         setMovies(data.Search);
       } catch (error) {
-        if (error === "AbortError") {
+        if (error === "AbortError" || error.name === "AbortError") {
           setErr(error.message);
         }
       } finally {
@@ -70,6 +75,11 @@ export default function App() {
       controller.abort();
     };
   }, [query]);
+
+  // set data on local storage
+  useEffect(() => {
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
 
   return (
     <>
