@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import RatingUI from "./components/RatingUI";
 import { useMovies } from "./components/customHooks/useMovies";
+import { useLocalStorage } from "./components/customHooks/useLocalStorage";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -13,14 +14,7 @@ export default function App() {
   const [query, setQuery] = useState("");
 
   const { movies, isLoading, err } = useMovies(query);
-  // const [watched, setWatched] = useState([]);
-
-  //useState Hook only receive a callback function don't receive any arguments
-  const [watched, setWatched] = useState(function () {
-    const localData = localStorage.getItem("watched");
-    if (!localData) return [];
-    return JSON.parse(localData);
-  });
+  const [watched, setWatched] = useLocalStorage([], "watched");
 
   function handelSelectedId(id) {
     setSelectedId((pre) => (id === pre ? null : id));
@@ -36,13 +30,6 @@ export default function App() {
   function handelDelete(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-  // set data on local storage
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
 
   return (
     <>
